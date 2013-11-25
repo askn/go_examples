@@ -45,12 +45,10 @@ func (p *PasswordCard) genereateGrid() {
 	headerCharsArray := strings.Split(HEADER_CHARS, "")
 	p.shuffle(headerCharsArray, rnd)
 
-	if len(headerCharsArray) > WIDTH {
-		tmp := headerCharsArray
-		headerCharsArray := new([WIDTH]string)
-		copy(tmp[:], headerCharsArray[:])
-	}
-	for i, v := range headerCharsArray {
+	headerChars := new([WIDTH]string)
+	copy(headerChars[:], headerCharsArray[:])
+
+	for i, v := range headerChars {
 		p.grid[0][i] = v
 	}
 
