@@ -56,4 +56,24 @@ func main() {
 	fmt.Printf("%d-%d\n", len(slic), cap(slic)) // 5-6
 	copy(ss[2:5], slic[2:5])
 	fmt.Printf("%d\n", ss)
+
+	slic = append(slic, slic...)
+
+	// delete 3. item
+	fmt.Printf("%d\n", slic)
+	slic = append(slic[:3], slic[4:]...)
+	fmt.Printf("%d\n", slic)
+
+	// delete 4. and 5. items
+	slic = append(slic[:3], slic[5:]...)
+	fmt.Printf("%d\n", slic)
+
+	// belirtilen index'e ekle
+	slic = append(slic[:3], append([]int{11, 22, 33}, slic[3:]...)...)
+	fmt.Printf("%d\n", slic)
+
+	// pop
+	slic = slic[:len(slic)-1]
+	fmt.Printf("%d\n", slic)
+
 }
