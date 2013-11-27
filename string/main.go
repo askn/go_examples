@@ -21,6 +21,9 @@ func uniq(arr []byte) []byte {
 			if v == u {
 				i++
 			}
+			if i > 1 {
+				break
+			}
 		}
 		if i == 0 {
 			uniq_arr = append(uniq_arr, v)
