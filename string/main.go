@@ -12,7 +12,8 @@ func reverse(str string) string {
 	return string(chars)
 }
 
-func uniq(arr []byte) []byte {
+func uniq(str string) string {
+	arr := []byte(str)
 	uniq_arr := []byte{}
 
 	for _, v := range arr {
@@ -29,10 +30,10 @@ func uniq(arr []byte) []byte {
 			uniq_arr = append(uniq_arr, v)
 		}
 	}
-	return uniq_arr
+	return string(uniq_arr)
 }
 
 func main() {
 	fmt.Printf("%s\n", reverse("askin"))
-	fmt.Printf("%s\n", uniq([]byte("asskingedikk")))
+	fmt.Printf("%s\n", uniq("asskin  gedikk"))
 }
