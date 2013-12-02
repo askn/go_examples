@@ -31,9 +31,10 @@ func BSort(list []byte) []byte {
 }
 
 func main() {
-	// 
-	fmt.Printf("%d\n", BSort([]byte("askingedik")))
-	fmt.Printf("%s\n", BSort([]byte("askingedik")))
+	fmt.Printf("%d\n", BubbleSort([]byte("askingedik")))
+	fmt.Printf("%s\n", BubbleSort([]byte("askingedik")))
+
 	fmt.Printf("%d\n", BubbleSort([]byte{5, 1, 4, 2, 8}))
+
 	fmt.Printf("%d\n", BSort([]byte{5, 1, 4, 2, 8}))
 }
