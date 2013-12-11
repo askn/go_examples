@@ -34,4 +34,25 @@ func main() {
 		fmt.Println("Shape details: ", shapes[n])
 		fmt.Println("Area of this shape is: ", shapes[n].Area())
 	}
+
+	var i Shaper
+	s := new(Square)
+	i = s
+
+	// i interface olmalı tip'i sorgulanıyor
+	if v, ok := i.(Shaper); ok {
+		fmt.Println(v, ok)
+	}
+	if v, ok := i.(*Square); ok {
+		fmt.Println(v, ok)
+	}
+
+	switch i.(type) {
+	case *Rectangle:
+		fmt.Println("Rectangle")
+	case *Square:
+		fmt.Println("Square")
+	default:
+
+	}
 }
