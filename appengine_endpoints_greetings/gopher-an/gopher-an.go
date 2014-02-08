@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"appengine"
+	_ "appengine"
 	"appengine/datastore"
 	"github.com/crhym3/go-endpoints/endpoints"
 )
@@ -16,21 +16,8 @@ type Greeting struct {
 	Date    time.Time      `json:"date"`
 }
 
-// bu yollarken gerekli alanlar zorunlu değil
-type GreetingReq struct {
-	Author  string `json:"author" endpoints:"req"`
-	Content string `json:"content"`
-}
-
-type GreetingReqShow struct {
+type GreetingReqId struct {
 	Key *datastore.Key `json:"id"`
-}
-
-// geri dönen alanlar
-type GreetingResp struct {
-	Author  string    `json:"author" endpoints:"req"`
-	Content string    `json:"content"`
-	Date    time.Time `json:"date"`
 }
 
 // GreetingsList is a response type of GreetingService.List method
@@ -38,25 +25,12 @@ type GreetingsList struct {
 	Items []*Greeting `json:"items"`
 }
 
+type GreetingsD struct {
+}
+
 // Request type for GreetingService.List
 type GreetingsListReq struct {
 	Limit int `json:"limit" endpoints:"d=10"`
-}
-
-func (gr *Greeting) put(c appengine.Context) (err error) {
-	key := gr.Key
-
-	if key == nil {
-		key = datastore.NewIncompleteKey(c, "greeting", nil)
-	}
-
-	key, err = datastore.Put(c, key, gr)
-
-	if err == nil {
-		gr.Key = key
-	}
-
-	return
 }
 
 func newGreeting(author string, content string) *Greeting {
@@ -67,31 +41,39 @@ func newGreeting(author string, content string) *Greeting {
 type GreetingService struct {
 }
 
-func (gs *GreetingService) Create(r *http.Request, req *GreetingReq, resp *GreetingResp) error {
+func (gs *GreetingService) Create(r *http.Request, req *Greeting, resp *Greeting) error {
 	c := endpoints.NewContext(r)
 
-	greeting := newGreeting(req.Author, req.Content)
+	resp.Author, resp.Content = req.Author, req.Content
 
-	if err := greeting.put(c); err != nil {
+	key, err := datastore.Put(c, datastore.NewIncompleteKey(c, "greeting", nil), resp)
+
+	if err != nil {
 		return err
 	}
-	resp.Content = greeting.Content
-	resp.Author = greeting.Author
-	resp.Date = greeting.Date
+	resp.Key = key
+	resp.Date = time.Now()
+
 	return nil
 }
 
-func (gs *GreetingService) Show(r *http.Request, req *GreetingReqShow, resp *GreetingResp) error {
+func (gs *GreetingService) Show(r *http.Request, req *GreetingReqId, resp *Greeting) error {
 	c := endpoints.NewContext(r)
 
-	var g Greeting
-	if err := datastore.Get(c, req.Key, &g); err != nil {
+	if err := datastore.Get(c, req.Key, resp); err != nil {
 		return err
 	}
 
-	resp.Content = g.Content
-	resp.Author = g.Author
-	resp.Date = g.Date
+	return nil
+}
+
+func (gs *GreetingService) Destroy(r *http.Request, req *GreetingReqId, resp *GreetingsD) error {
+	c := endpoints.NewContext(r)
+
+	if err := datastore.Delete(c, req.Key); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -140,5 +122,8 @@ func init() {
 	info.Name, info.HttpMethod, info.Path, info.Desc = "greets.show",
 		"GET", "greetings/{id}", "Show"
 
+	info = api.MethodByName("Destroy").Info()
+	info.Name, info.HttpMethod, info.Path, info.Desc = "greets.destroy",
+		"DELETE", "greetings/{id}", "delete"
 	endpoints.HandleHttp()
 }
